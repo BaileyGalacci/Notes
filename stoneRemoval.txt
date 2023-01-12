@@ -1,0 +1,81 @@
+class Node:
+    def __init__(self, coords: List[int]):
+        self.coord = coords
+        self.isChecked = False
+        self.edges = []
+    
+    def addEdge(self, n2):
+        #print("Attaching node at [%d,%d] to node at [%d, %d]" % (self.coord[0], self.coord[1], n2.coord[0], n2.coord[1]))
+        self.edges.append(n2)
+        n2.edges.append(self)
+        #print("Node has neighbors:")
+        #printNodes(self.edges)
+        #print("Neighbor has neighbors:")
+        #printNodes(n2.edges)
+
+def sortByRow(list: List[Node]) -> int:
+    return list.coord[0]
+
+def sortByColumn(list: List[Node]) -> int:
+    return list.coord[1]
+
+def printNodes(list: List[Node]):
+    for item in list:
+        print(item.coord)
+        
+def markTreeAsChecked(node: Node):
+    #print("Checking node at [%d,%d]" % (node.coord[0], node.coord[1]))
+    #print("Node has neighbors:")
+    #printNodes(node.edges)
+    
+    node.isChecked = True
+    for neighbor in node.edges:
+        if(not neighbor.isChecked):
+            #print("Checking neighbor at [%d,%d]" % (neighbor.coord[0], neighbor.coord[1]))
+            markTreeAsChecked(neighbor)
+        
+        
+def countTrees(list: List[Node]) -> int:
+    trees = 0
+    for node in list:
+        if(not node.isChecked):
+            #print("New tree found starting at [%d,%d]" % (node.coord[0], node.coord[1]))
+            trees += 1
+            markTreeAsChecked(node)
+            
+    return trees
+            
+
+class Solution:
+    def removeStones(self, stones: List[List[int]]) -> int:
+        # build the graph
+        nodes = []
+        for stone in stones:
+            nodes.append(Node(stone))
+            
+        #for node in nodes:
+            #print("Listing node at [%d,%d]" % (node.coord[0], node.coord[1]))
+            #print("Node has neighbors:")
+            #printNodes(node.edges)
+    
+            
+        #print("Beginning row edge detection")
+        
+        nodes.sort(key=sortByRow)
+        #printNodes(nodes)
+        
+        for i in range(len(nodes)-1):
+            if(nodes[i].coord[0] == nodes[i+1].coord[0]):
+                nodes[i].addEdge(nodes[i+1])
+        
+        #print("Beginning column edge detection")
+        nodes.sort(key=sortByColumn)
+        #printNodes(nodes)
+        
+        for i in range(len(nodes)-1):
+            if(nodes[i].coord[1] == nodes[i+1].coord[1]):
+                nodes[i].addEdge(nodes[i+1])
+        
+        # count the number of self-contained graphs                
+        return len(nodes) - countTrees(nodes)
+    

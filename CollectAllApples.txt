@@ -1,0 +1,158 @@
+#include <utility> // pair
+#include <vector>  // vect
+#include <tuple>   // tuple
+#include <limits.h> // INT_MAX
+
+// read into btrees, b+trees for better optimization of my map implementations
+
+class Vertex;
+typedef std::pair<Vertex*, int> edge;
+
+class Vertex
+{
+private:
+    
+public:
+    std::vector<edge> edges = {};
+    bool isChecked = false;
+    bool hasApple = false;
+    bool isNeeded = false;
+    int dist = INT_MAX;
+    int ID = -1;
+
+    Vertex(){};
+    Vertex(bool hasApple_in, int ID_in)
+    {
+        hasApple = hasApple_in;
+        ID = ID_in;
+    };
+    ~Vertex(){};
+
+    void addEdge(Vertex* vp, int dist)
+    {
+        edges.push_back(std::make_pair(vp, dist));
+    }
+
+    // unweighted edge
+    void addEdge(Vertex* vp)
+    {
+        edges.push_back(std::make_pair(vp, 0));
+    }
+
+};
+
+std::map<int, Vertex> makeGraphMap(const int numVerts, const std::vector<std::vector<int>> &edges_in, const bool twoWay, std::vector<bool> &hasApple)
+{
+    // TODO: Rework edge creation to include ID of edge on the other end, or include Vertex ID in the Vertex class. 
+    std::map<int, Vertex> graph;
+    for(int i=0; i<hasApple.size(); i++)
+    {
+        //printf("Making vertex %d\n", i);
+        graph[i] = Vertex(hasApple[i], i);
+    }
+
+    for(int i=0; i<edges_in.size(); i++)
+    {
+        //printf("Attaching %d to %d\n", edges_in[i][0], edges_in[i][1]);
+        graph[edges_in[i][0]].addEdge(&graph[edges_in[i][1]]);
+
+        if(twoWay)
+            graph[edges_in[i][1]].addEdge(&graph[edges_in[i][0]]);
+    }
+    return graph;
+}
+
+//std::vector<Vertex> makeGraph(int numVerts, std::vector<int> inv1, std::vector<int> inv2, std::vector<int> ind)
+std::vector<Vertex> makeGraph(const int numVerts, const std::vector<std::tuple<int, int, int>> &edges_in, const bool twoWay=true)
+{
+    // create numVerts vertices
+    std::vector<Vertex> graph(numVerts);
+    for(int i=0; i<edges_in.size(); i++)
+    {
+        //TODO: make sure edges don't point a vector to themselves
+        graph[std::get<0>(edges_in[i])].addEdge(&graph[std::get<1>(edges_in[i])], std::get<2>(edges_in[i]));
+
+        // make edges 2 way by adding the edge to the second vertex as well
+	if(twoWay)
+            graph[std::get<1>(edges_in[i])].addEdge(&graph[std::get<0>(edges_in[i])], std::get<2>(edges_in[i]));
+    }
+    return graph;
+}
+
+int markParentsNeeded(std::map<int, Vertex> &graphMap, int i)
+{
+    int retVal = 0;
+    if(graphMap[i].isNeeded == false)
+    {
+        //printf("Marking node %d\n", graphMap[i].ID);
+        retVal++;
+        graphMap[i].isNeeded = true;
+        // find parent, should be first edge unless we're at root node
+	    if(graphMap[i].ID != 0)
+            retVal += markParentsNeeded(graphMap, graphMap[i].edges[0].first->ID);
+
+    }
+    return retVal;
+}
+
+int findShortestPathTravelled(std::map<int, Vertex> &graphMap)
+{
+    int countedNodes = 0;
+    int i=0;
+    // mark all nodes that need to be travelled to
+    while(true)
+    {
+        int tmpNodes = 0;
+        if(graphMap.count(i) == 0)
+	    {
+            //printf("stopped counting at node %d\n", i);
+            break;
+        }
+
+        if(graphMap[i].hasApple)
+        {
+            tmpNodes = markParentsNeeded(graphMap, i);
+        }
+
+        countedNodes += tmpNodes;
+	    i++;
+    }
+
+    // count up distance to nodes
+    if(countedNodes == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return 2*(countedNodes-1);
+    }
+}
+
+void diveIn(Vertex *v, bool shouldMark=true)
+{
+    if(shouldMark) v->isChecked = true;
+
+    // check through each edge, call recursively if destination is not yet checked
+    for(int i=0; i<v->edges.size(); i++)
+    {
+        if(! v->edges[i].first->isChecked)
+        {
+            diveIn(v->edges[i].first, shouldMark);
+        }
+    }
+}
+
+class Solution {
+public:
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+
+        auto graphMap = makeGraphMap(n, edges, true, hasApple);
+
+        int retVal = 0;
+
+        retVal = findShortestPathTravelled(graphMap);
+
+        return retVal;
+    }
+};

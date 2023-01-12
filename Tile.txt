@@ -1,0 +1,37 @@
+#include <vector> // vector
+
+enum terrainType
+{
+ROAD	= 0,
+SHOAL,
+PLAIN,
+FOREST,
+SILO,
+SILO_U,
+MOUNTAIN,
+CITY,
+BASE,
+AIRPORT,
+PORT,
+TOWER,
+LAB,
+HQ
+}
+
+class Terrain
+{
+    terrainType terrain = ROAD;
+    Player* isOwnedBy = nullptr;
+    bool    isCapturable = false;
+};
+
+MOUNTAIN
+}
+
+class Tile
+{
+private: 
+
+public:
+    
+};

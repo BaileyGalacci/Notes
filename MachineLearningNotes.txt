@@ -1,0 +1,59 @@
+Supervised Machine Learning
+
+ML systems learn how to combine input to produce useful predictions on never-before-seen data
+Label: 
+	variable we're predicting. Typically represented by the variable y
+
+Features: 
+	Input variables describing our data
+	Typically represented by x_0 ... x_n
+
+Example is a particular instance of data x
+Labeled example has {features, label}: (x,y)
+	Used to train the model
+Unlabeled example has {features, ?}: (x,?)
+	Used for making predictions on new data
+Model maps examples to predicted labels: y'
+	Defined by internal parameters, which are learned
+
+
+Regression v Classification
+Regression model predicts continuous values.
+ex: value of a house, or probability an ad is clicked
+
+Classification predicts discrete values
+ex: spam or not? image of a dog, cat, or hamster? 
+
+
+
+Learning from data
+Imagine a simple model, sq footage vs house price. (x v y)
+Say we use a simple line fit as our model. 
+
+y = w_1*x_1 + b (bias)
+Loss: How well does our prediction work? 
+	Loss is always 0 to positive values
+	L2 loss (or squared error) is one example. 
+	(y - y')^2
+
+Set D is a labeled set.
+L2Loss = sum(y-prediction(x), (x,y) elements of set D)^2
+MSE = 1/N * sum(y-prediction(x), (x,y) elements of set D)^2
+
+Loss is the penalty for a bad prediction, so we want to minimize loss. 
+
+
+Minimizing loss:
+Gradient: derivative of Loss function (i.e. (y-y')^2) with respect to weights and biases tells us how loss changes for a given example
+This strategy is called gradient descent
+Negative gradient tells us which direction to update model parameters. 
+Step size determined by learning rate. If model diverges, consider decreasing learning rate by an order of magnitude. 
+
+Stochastic: One example at a time
+Mini-batch: Batches of 10-1000, loss and gradients are averaged over the batch 
+
+Gradient descent example: 
+Loss	= (y-prediction(x))^2
+Loss(y,y')= (y - (w_0*x_0+b_0))^2
+Gradient: (df/dw_0 , df/db_0) Loss(y,y')
+ ( -2yx+0 + 2w_0x_0^2 + 2b_0x_0 , -2y + 2w_0x_0 + 2b_0)
