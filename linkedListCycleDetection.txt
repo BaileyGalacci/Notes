@@ -1,0 +1,33 @@
+// Linked List Cycle detection
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        std::map<ListNode*, int> nodeMap = {};
+        //int pos = 0;
+        //ListNode *retVal = nullptr;
+
+        while(head != nullptr)
+        {
+            if(nodeMap.count(head) == 0)
+            {
+                nodeMap[head] = 0; //pos;
+                //pos++;
+                head = head->next;
+            }
+            else
+            {
+                return head;
+            }
+        }
+
+        return nullptr;
+    }
+};
