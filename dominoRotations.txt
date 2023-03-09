@@ -1,0 +1,45 @@
+//https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/submissions/912355081/
+class Solution {
+public:
+    int minDominoRotations(vector<int>& tops, vector<int>& bottoms) {
+        // figure out which number we will aim to rotate for
+        std::vector<int> topCount(7,0);
+        std::vector<int> bottomCount(7,0);
+        std::vector<int> duplicateCount(7,0);
+
+        //std::map<int, int> topCount = {{1,0},{2,0},{3,0},{4,0},{5,0},{6,0}};
+        //std::map<int, int> bottomCount = {{1,0},{2,0},{3,0},{4,0},{5,0},{6,0}};
+        //std::map<int, int> duplicateCount = {{1,0},{2,0},{3,0},{4,0},{5,0},{6,0}};
+        for(int i=0; i<tops.size(); i++)
+        {
+            topCount[tops[i]]++;
+            bottomCount[bottoms[i]]++;
+            if(tops[i] == bottoms[i])
+            {
+                duplicateCount[tops[i]]++;
+            }
+        }
+
+        int target = -1;
+
+        for(int i=1; i<=6; i++)
+        {
+            if(topCount[i]+bottomCount[i]-duplicateCount[i] >= tops.size())
+            {
+                //return i;
+                target = i;
+            }
+        }
+
+        if(target == -1)
+        {
+            return -1;
+        }
+        else
+        {
+            // we're aiming for target, and we need tops.size() sides to be correct.
+            int sides = min(tops.size()-topCount[target], bottoms.size()-bottomCount[target]);
+            return sides;
+        }
+    }
+};
