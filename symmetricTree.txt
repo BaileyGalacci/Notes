@@ -1,0 +1,39 @@
+//https://leetcode.com/problems/symmetric-tree/submissions/914625095/
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    static inline bool isSymmetric(const TreeNode* leftRoot, const TreeNode* rightRoot){
+        if((leftRoot->left || rightRoot->right) && !(leftRoot->left && rightRoot->right)){
+            return false;
+        }
+        if((leftRoot->right || rightRoot->left) && !(leftRoot->right && rightRoot->left)){
+            return false;
+        }
+
+        bool retVal = true;
+
+        retVal &= (leftRoot->val == rightRoot->val);
+        if(leftRoot->left && rightRoot->right){
+            retVal &= isSymmetric(leftRoot->left, rightRoot->right);
+        }
+        if(leftRoot->right && rightRoot->left){
+            retVal &= isSymmetric(leftRoot->right, rightRoot->left);
+        }
+
+        return retVal;
+    }
+    bool isSymmetric(TreeNode* root) {
+        return isSymmetric(root, root);
+    }
+};
